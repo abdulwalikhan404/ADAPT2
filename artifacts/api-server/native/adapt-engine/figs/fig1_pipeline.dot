@@ -1,0 +1,19 @@
+digraph G { rankdir=TB; graph [fontname="Helvetica", bgcolor="white", pad=0.3]; node [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled", color="#334155", penwidth=1.2]; edge [fontname="Helvetica", fontsize=9, color="#475569"]; nodesep=0.35; ranksep=0.7; newrank=true;
+ up [label="1. Upload\nPDF / Word / photo", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ ocr [label="2. Extract text\n(parser + OCR)", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ lib [label="3. Notes library\nsubject / topic / search", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ ai [label="4. AI explainer\nsummary, simple English/Urdu", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ quiz [label="5. Practice\nflashcards + quiz", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ res [label="6. Quiz results\n(learning indicator)", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ rev [label="7. Revision tasks\n(duration, priority, deadline)", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ plan [label="8. ADAPT planner (C++17)\nschedule + constraint check", fillcolor="#DBEAFE"];
+ dis [label="9. Disruption\nlost time / new task /\nlonger task", fillcolor="#DBEAFE"];
+ rep [label="10. Selective repair\n+ explanation", fillcolor="#DBEAFE"];
+ apr [label="11. User approves\nor rejects", fillcolor="#DBEAFE"];
+ fb [label="12. Actual duration\n-> estimator update", fillcolor="#DBEAFE"];
+ {rank=same; up; ocr; lib; ai; quiz; res}
+ {rank=same; rev; plan; dis; rep; apr; fb}
+ up->ocr->lib->ai->quiz->res; res->rev [label="  hand-off to planner"];
+ rev->plan->dis->rep->apr->fb;
+ fb->plan [constraint=false, style=dashed, label="better estimates"];
+}

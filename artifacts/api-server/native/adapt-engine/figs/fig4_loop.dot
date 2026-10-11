@@ -1,0 +1,4 @@
+digraph G { rankdir=LR; graph [fontname="Helvetica", bgcolor="white", pad=0.3]; node [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled", color="#334155", penwidth=1.2]; edge [fontname="Helvetica", fontsize=9, color="#475569"]; node [shape=circle, width=1.15, fixedsize=true, fontsize=11, style=filled, fillcolor="#DBEAFE"]; nodesep=0.5;
+ P [label="PLAN"]; O [label="OBSERVE"]; D [label="DIAGNOSE"]; R [label="REPAIR"]; L [label="LEARN"];
+ P->O->D->R->L; L->P [label="  updated estimates"];
+}

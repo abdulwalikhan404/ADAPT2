@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "ADAPT 2.0"
+description = "A responsive student study-planning app for organizing tasks and generating a transparent demo schedule with deadline, priority, and split-task handling."
+version = "1.0.0"
+id = "artifacts/adapt-study-planner"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22212
+
+[services.development]
+run = "pnpm --filter @workspace/adapt-study-planner run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/adapt-study-planner", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/adapt-study-planner/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22212"
+BASE_PATH = "/"

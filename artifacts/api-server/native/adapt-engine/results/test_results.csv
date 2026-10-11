@@ -1,0 +1,11 @@
+test_id,scenario,actual_output,result
+T1,"No disruption","tasks moved=0, violations=0",PASS
+T2,"Lost study window Mon 16:00-18:00","affected=3, moved=3, unnecessary=0, unscheduled=1, fixed Mon19-20 used=no, violations=0",PASS
+T3,"A02 duration 60 -> 120 min","A02 scheduled minutes=120, violations=0, unnecessary moves=0",PASS
+T4,"Urgent new task N01 (prio 5, 60 min, Tue 12:00)","N01 placed=yes, strategy=expanded, notes=4, violations=0",PASS
+T5,"Impossible workload (8 extra 2-h tasks due Mon 23:20)","unscheduled=7, false-feasible claim=no, violations=0",PASS
+T6,"Negative duration, missing title, priority 9","3 validation errors, no crash",PASS
+T7,"alpha=0.3, E=60, A=80","E: 60 -> 66.0 (expected 66.0); invalid actual ignored=yes",PASS
+T8,"Second disruption on the approved revised plan","history entries=5, unnecessary moves=0, violations=0",PASS
+T9,"User rejects suggestion","approved plan unchanged=yes, last log="REJECT prefer to keep Monday evening free"",PASS
+T10,"Malformed numeric field; duplicate id; valid control file","malformed errors=1, duplicate errors=1, control loaded tasks=2",PASS

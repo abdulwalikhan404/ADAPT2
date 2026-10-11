@@ -1,0 +1,11 @@
+digraph G { rankdir=TB; graph [fontname="Helvetica", bgcolor="white", pad=0.3]; node [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled", color="#334155", penwidth=1.2]; edge [fontname="Helvetica", fontsize=9, color="#475569"]; nodesep=0.3; ranksep=0.5; compound=true;
+ ui [label="Student interface\n(CLI now; HTML/CSS/JS later)", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ api [label="Application backend / web API", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ subgraph cluster_core { label="C++17 ADAPT engine (Stage 1 - implemented)"; style="rounded,filled"; fillcolor="#EFF6FF"; color="#2563EB"; fontsize=11;
+   {rank=same; val; sch; adp; sco} {rank=same; exp; ses; est}
+   val [label="Validation", fillcolor="#DBEAFE"]; sch [label="Scheduler\n(EDF + priority)", fillcolor="#DBEAFE"]; adp [label="Adaptation engine\n(selective repair)", fillcolor="#DBEAFE"];
+   sco [label="Scorer", fillcolor="#DBEAFE"]; exp [label="Explainer", fillcolor="#DBEAFE"]; est [label="Estimator\n(EMA)", fillcolor="#DBEAFE"]; ses [label="Session / history\napprove-reject", fillcolor="#DBEAFE"]; }
+ db [label="Storage\nCSV now -> SQLite later", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ ocr [label="Document parsers + OCR", fillcolor="#FEF3C7", style="rounded,filled,dashed"]; ai [label="AI model\n(explain / quiz)", fillcolor="#FEF3C7", style="rounded,filled,dashed"]; sim [label="Similarity + citation\nchecker", fillcolor="#FEF3C7", style="rounded,filled,dashed"];
+ ui->api; api->val [lhead=cluster_core]; val->sch->adp->sco->exp->ses->est; api->db; api->ocr; api->ai; api->sim;
+}

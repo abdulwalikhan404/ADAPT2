@@ -1,0 +1,15 @@
+digraph G { rankdir=TB; graph [fontname="Helvetica", bgcolor="white", pad=0.3]; node [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled", color="#334155", penwidth=1.2]; edge [fontname="Helvetica", fontsize=9, color="#475569"]; nodesep=0.35; ranksep=0.4;
+ s [label="Disruption reported", shape=oval, fillcolor="#DBEAFE"];
+ a [label="Apply to world:\nremove lost time / add task / change duration", fillcolor="#DBEAFE"];
+ b [label="Find affected tasks\n(overlap, changed duration, new task)", fillcolor="#DBEAFE"];
+ c [label="C1 Selective: freeze all unaffected tasks,\nre-place affected ones (EDF > priority > shorter)", fillcolor="#DBEAFE"];
+ d [label="Did the disruption leave a NEW\ntask unscheduled?", shape=diamond, style="filled", fillcolor="#FFFFFF", fontsize=10];
+ e [label="C2 Expanded: also let later-deadline\ntasks move\nC3 Full reschedule (last resort)", fillcolor="#DBEAFE"];
+ f [label="Hard-constraint check\n(no overlap, inside free time, before deadline,\nfull duration, no split of non-splittable)", fillcolor="#DBEAFE"];
+ g [label="Reject candidates with violations;\nscore the rest:\ncost = 200 x unscheduled priority + 3 x unnecessary moves + 1 x moved tasks", fillcolor="#DBEAFE"];
+ h [label="Pick lowest cost; write a reason\nfor every moved / unscheduled task", fillcolor="#DBEAFE"];
+ i [label="Show proposal to user", fillcolor="#DBEAFE"];
+ j [label="Approve?", shape=diamond, style="filled", fillcolor="#FFFFFF"];
+ k [label="Store as approved plan\n+ history", shape=oval, fillcolor="#DBEAFE"]; l [label="Keep previous plan\nlog rejection", shape=oval, fillcolor="#DBEAFE"];
+ s->a->b->c->d; d->f [label="no"]; d->e [label="yes"]; e->f; f->g->h->i->j; j->k [label="yes"]; j->l [label="no"];
+}

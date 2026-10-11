@@ -1,0 +1,262 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: study-plans
+    description: ADAPT study planning operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /plans:
+    post:
+      operationId: generateStudyPlan
+      tags: [study-plans]
+      summary: Generate a study plan with the native ADAPT engine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudyPlanInput"
+      responses:
+        "200":
+          description: Generated plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudyPlanResult"
+        "400":
+          description: Invalid plan input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Native engine failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /plans/disruptions:
+    post:
+      operationId: repairStudyPlan
+      tags: [study-plans]
+      summary: Repair a plan after a disruption with the native ADAPT engine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudyPlanRepairInput"
+      responses:
+        "200":
+          description: Repaired plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudyPlanRepairResult"
+        "400":
+          description: Invalid disruption input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Native engine failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+    StudyTaskInput:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 100
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        durationMinutes:
+          type: integer
+          minimum: 1
+          maximum: 720
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 5
+        deadlineMinute:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        canSplit:
+          type: boolean
+      required: [id, title, durationMinutes, priority, deadlineMinute, canSplit]
+    StudyInterval:
+      type: object
+      properties:
+        startMinute:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        endMinute:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+      required: [startMinute, endMinute]
+    StudyWorld:
+      type: object
+      properties:
+        availability:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyInterval"
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyTaskInput"
+      required: [availability, tasks]
+    StudyPlanInput:
+      type: object
+      properties:
+        world:
+          $ref: "#/components/schemas/StudyWorld"
+      required: [world]
+    StudyPlanChunk:
+      type: object
+      properties:
+        taskId:
+          type: string
+        startMinute:
+          type: integer
+        endMinute:
+          type: integer
+      required: [taskId, startMinute, endMinute]
+    StudyPlan:
+      type: object
+      properties:
+        name:
+          type: string
+        chunks:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyPlanChunk"
+        unscheduledTaskIds:
+          type: array
+          items:
+            type: string
+        cost:
+          type: number
+        notes:
+          type: array
+          items:
+            type: string
+      required: [name, chunks, unscheduledTaskIds, cost, notes]
+    StudyPlanResult:
+      type: object
+      properties:
+        world:
+          $ref: "#/components/schemas/StudyWorld"
+        plan:
+          $ref: "#/components/schemas/StudyPlan"
+      required: [world, plan]
+    LostWindowDisruption:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [LostWindow]
+        interval:
+          $ref: "#/components/schemas/StudyInterval"
+      required: [type, interval]
+    NewTaskDisruption:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [NewTask]
+        task:
+          $ref: "#/components/schemas/StudyTaskInput"
+      required: [type, task]
+    DurationChangeDisruption:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [DurationChange]
+        taskId:
+          type: string
+          minLength: 1
+          maxLength: 100
+        newDurationMinutes:
+          type: integer
+          minimum: 1
+          maximum: 720
+      required: [type, taskId, newDurationMinutes]
+    StudyPlanDisruption:
+      oneOf:
+        - $ref: "#/components/schemas/LostWindowDisruption"
+        - $ref: "#/components/schemas/NewTaskDisruption"
+        - $ref: "#/components/schemas/DurationChangeDisruption"
+    StudyPlanRepairInput:
+      type: object
+      properties:
+        world:
+          $ref: "#/components/schemas/StudyWorld"
+        plan:
+          $ref: "#/components/schemas/StudyPlan"
+        disruption:
+          $ref: "#/components/schemas/StudyPlanDisruption"
+      required: [world, plan, disruption]
+    StudyPlanRepairResult:
+      type: object
+      properties:
+        world:
+          $ref: "#/components/schemas/StudyWorld"
+        plan:
+          $ref: "#/components/schemas/StudyPlan"
+        affectedTaskIds:
+          type: array
+          items:
+            type: string
+        candidates:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudyPlan"
+      required: [world, plan, affectedTaskIds, candidates]
+
